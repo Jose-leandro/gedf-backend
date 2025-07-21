@@ -95,6 +95,11 @@ app.get("/dashboard", async (req, res) => {
       return res.status(400).json({ message: "userId is required" });
     }
 
+    const parsedUserId = parseInt(userId, 10);
+    if (isNaN(parsedUserId)) {
+      return res.status(400).json({ message: "userId must be a valid number" });
+    }
+
     const totalIncome = await prisma.income.aggregate({
       _sum: { value: true },
       where: { userId: parseInt(userId, 10) },
@@ -121,9 +126,8 @@ app.get("/dashboard", async (req, res) => {
       select: { name: true },
     });
 
-    const balance = totalIncome - totalSpends;
-
-    const parsedUserId = parseInt(userId, 10);
+    const balance =
+      (totalIncome._sum.value || 0) - (totalSpends._sum.value || 0);
 
     // Get today’s date boundaries
     const todayStart = startOfDay(new Date());
