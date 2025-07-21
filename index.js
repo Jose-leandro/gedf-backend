@@ -14,6 +14,21 @@ app.use(
 
 app.use(express.json());
 
+app.use((req, res, next) => {
+  console.log(`➡️  ${req.method} ${req.url}`);
+  console.log("🧾 Body:", req.body);
+  console.log("🧾 Query:", req.query);
+
+  // Capture response data
+  const originalJson = res.json;
+  res.json = function (data) {
+    console.log("✅ Response:", data);
+    return originalJson.call(this, data);
+  };
+
+  next();
+});
+
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
@@ -91,13 +106,14 @@ app.get("/dashboard", async (req, res) => {
   try {
     const { userId } = req.query;
 
+    const parsedUserId = parseInt(userId, 10);
+
     if (!userId || isNaN(parsedUserId)) {
       return res
         .status(400)
         .json({ message: "Valid numeric userId is required" });
     }
 
-    const parsedUserId = parseInt(userId, 10);
     if (isNaN(parsedUserId)) {
       return res.status(400).json({ message: "userId must be a valid number" });
     }
