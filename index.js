@@ -87,7 +87,7 @@ app.get("/api/income/summary", async (req, res) => {
   }
 });
 
-router.get("/dashboard", async (req, res) => {
+  app.get("/dashboard", async (req, res) => {
   try {
     const { userId } = req.query;
 
