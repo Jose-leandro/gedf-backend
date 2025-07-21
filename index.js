@@ -181,6 +181,20 @@ app.get("/dashboard", async (req, res) => {
       0,
     );
 
+    const dailyData = await prisma.$queryRaw`
+      SELECT
+        DATE("date") AS "date",
+        SUM(CASE WHEN "type" = 'income' THEN value ELSE 0 END) AS income,
+        SUM(CASE WHEN "type" = 'spend' THEN value ELSE 0 END) AS spend
+      FROM (
+        SELECT date, value, 'income' AS type FROM "Income" WHERE "userId" = ${parsedUserId}
+        UNION ALL
+        SELECT date, value, 'spend' AS type FROM "Spend" WHERE "userId" = ${parsedUserId}
+      ) AS combined
+      GROUP BY DATE("date")
+      ORDER BY DATE("date") ASC;
+    `;
+
     res.json({
       nameUser: name?.name || "User",
       totalIncome: totalIncome._sum.value || 0,
@@ -188,6 +202,7 @@ app.get("/dashboard", async (req, res) => {
       dailySpends: dailySpendTotal,
       dailyIncome: dailyIncomeTotal,
       balance: balance,
+      dailyData: dailyData,
       bar: byCategory.map((item) => ({
         category: item.category,
         amount: item._sum.value,
@@ -197,7 +212,7 @@ app.get("/dashboard", async (req, res) => {
         value: item._sum.value,
       })),
       spends: allIncomes,
-      infoText: "Your Spender 20% more of last month", // Placeholder
+      infoText: "Your Spender 20% more of last month",
     });
   } catch (error) {
     console.error("Summary error:", error);
