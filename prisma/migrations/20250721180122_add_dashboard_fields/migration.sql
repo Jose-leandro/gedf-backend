@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "Balance" DOUBLE PRECISION,
+ADD COLUMN     "dailyIncome" DOUBLE PRECISION,
+ADD COLUMN     "dailySprends" DOUBLE PRECISION,
+ADD COLUMN     "totalSprends" DOUBLE PRECISION;

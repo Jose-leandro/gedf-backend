@@ -12,6 +12,9 @@ model User {
   name   String
   spends Spend[]
   incomes Income[]
+  dailySprends  Float?    
+  dailyIncome   Float?    
+  Balance       Float?   
 }
 
 model Spend {
