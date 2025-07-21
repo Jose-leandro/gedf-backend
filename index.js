@@ -87,7 +87,7 @@ app.get("/api/income/summary", async (req, res) => {
   }
 });
 
-  app.get("/dashboard", async (req, res) => {
+app.get("/dashboard", async (req, res) => {
   try {
     const { userId } = req.query;
 
@@ -96,6 +96,11 @@ app.get("/api/income/summary", async (req, res) => {
     }
 
     const totalIncome = await prisma.income.aggregate({
+      _sum: { value: true },
+      where: { userId: parseInt(userId, 10) },
+    });
+
+    const totalSpends = await prisma.spend.aggregate({
       _sum: { value: true },
       where: { userId: parseInt(userId, 10) },
     });
@@ -111,8 +116,48 @@ app.get("/api/income/summary", async (req, res) => {
       orderBy: { date: "desc" },
     });
 
+    const name = await prisma.user.findUnique({
+      where: { id: parseInt(userId, 10) },
+      select: { name: true },
+    });
+
+    const balance = totalIncome - totalSpends;
+
+    // Get today’s date boundaries
+    const todayStart = startOfDay(new Date());
+    const todayEnd = endOfDay(new Date());
+
+    // 🧾 Query total spent today
+    const dailySpends = await prisma.spend.findMany({
+      where: {
+        userId,
+        date: {
+          gte: todayStart,
+          lte: todayEnd,
+        },
+      },
+    });
+    dailySpends.reduce((sum, item) => sum + item.value, 0);
+
+    // 🧾 Query total income today
+    const dailyIncome = await prisma.income.findMany({
+      where: {
+        userId,
+        date: {
+          gte: todayStart,
+          lte: todayEnd,
+        },
+      },
+    });
+    dailyIncome.reduce((sum, item) => sum + item.value, 0);
+
     res.json({
+      nameUser: name,
       totalIncome: totalIncome._sum.value || 0,
+      totalSpends: totalSpends._sum.value || 0,
+      dailySpends: dailySpends,
+      dailyIncome: dailyIncome,
+      balance: balance,
       bar: byCategory.map((item) => ({
         category: item.category,
         amount: item._sum.value,
