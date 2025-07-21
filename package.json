@@ -11,8 +11,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^6.10.1",
     "@types/node": "^20.9.1",
+    "cors": "^2.8.5",
+    "curl": "^0.1.4",
     "express": "^4.18.2",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "prisma": "^6.10.1"
   }
 }
