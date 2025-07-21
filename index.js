@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-
+import { startOfDay, endOfDay } from "date-fns";
 const app = express();
 
 app.use(
