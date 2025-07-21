@@ -91,8 +91,10 @@ app.get("/dashboard", async (req, res) => {
   try {
     const { userId } = req.query;
 
-    if (!userId) {
-      return res.status(400).json({ message: "userId is required" });
+    if (!userId || isNaN(parsedUserId)) {
+      return res
+        .status(400)
+        .json({ message: "Valid numeric userId is required" });
     }
 
     const parsedUserId = parseInt(userId, 10);
