@@ -343,9 +343,11 @@ app.get("/transactions", async (req, res) => {
       ...formattedSpends,
     ].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    res
-      .status(200)
-      .json(dashboardTransactions, incomesTransactions, spendsTransactions);
+    res.status(200).json({
+      transactions: dashboardTransactions,
+      incomes: formattedIncomes,
+      spends: formattedSpends,
+    });
   } catch (error) {
     console.error("transactions error:", error);
     res.status(500).json({ message: "Database error" });
