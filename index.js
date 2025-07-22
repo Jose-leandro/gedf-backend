@@ -289,6 +289,69 @@ app.get("/dashboard", async (req, res) => {
   }
 });
 
+app.get("/transactions", async (req, res) => {
+  try {
+    const userId = Number(req.query.userId);
+
+    if (!userId) {
+      return res.status(400).json({ message: "Missing userId" });
+    }
+
+    // Fetch last 5 incomes
+    const incomesTransactions = await prisma.income.findMany({
+      where: { userId },
+      orderBy: { date: "desc" },
+      take: 5,
+      select: {
+        id: true,
+        description: true,
+        value: true,
+        date: true,
+        name: true,
+        type: "income",
+      },
+    });
+
+    // Fetch last 5 spends
+    const spendsTransactions = await prisma.spend.findMany({
+      where: { userId },
+      orderBy: { date: "desc" },
+      take: 5,
+      select: {
+        id: true,
+        description: true,
+        value: true,
+        date: true,
+        name: true,
+        type: "spend",
+      },
+    });
+
+    // Add `type` field manually if not in DB
+    const formattedIncomes = incomesTransactions.map((i) => ({
+      ...i,
+      type: "income",
+    }));
+    const formattedSpends = spendsTransactions.map((s) => ({
+      ...s,
+      type: "spend",
+    }));
+
+    // Merge and sort by date descending
+    const dashboardTransactions = [
+      ...formattedIncomes,
+      ...formattedSpends,
+    ].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    res
+      .status(200)
+      .json(dashboardTransactions, incomesTransactions, spendsTransactions);
+  } catch (error) {
+    console.error("transactions error:", error);
+    res.status(500).json({ message: "Database error" });
+  }
+});
+
 app.listen(3000, () => {
   console.log("Express server initialized");
 });
