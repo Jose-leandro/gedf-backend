@@ -20,7 +20,7 @@ model User {
 model Spend {
   id       Int      @id @default(autoincrement())
   category String
-  date     DateTime
+  date     DateTime @default(now())
   value    Float
   status   String
   people   String
@@ -31,7 +31,7 @@ model Spend {
 model Income {
   id          String   @id @default(uuid())
   value       Float
-  date        DateTime
+  date        DateTime @default(now())
   category    String
   description String
   people      String

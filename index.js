@@ -44,7 +44,7 @@ app.post("/api/income", async (req, res) => {
     const income = await prisma.income.create({
       data: {
         category,
-        date: new Date(date),
+        date: new new Date()(),
         value: parseFloat(value),
         description,
         people,
@@ -95,6 +95,75 @@ app.get("/api/income/summary", async (req, res) => {
       })),
       spends: allIncomes,
       infoText: "Your Spender 20% more of last month", // Placeholder
+    });
+  } catch (error) {
+    console.error("Summary error:", error);
+    res.status(500).json({ message: "Database error" });
+  }
+});
+
+app.post("/api/spends", async (req, res) => {
+  try {
+    const { category, date, value, description, people, userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ message: "userId is required" });
+    }
+
+    const spend = await prisma.spend.create({
+      data: {
+        category,
+        date: new new Date()(),
+        value: parseFloat(value),
+        description,
+        people,
+        userId: parseInt(userId, 10),
+      },
+    });
+
+    res.status(201).json(spend);
+  } catch (error) {
+    console.error("Prisma save error:", error);
+    res.status(500).json({ message: "Database error" });
+  }
+});
+
+app.get("/api/spends/summary", async (req, res) => {
+  try {
+    const { userId } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({ message: "userId is required" });
+    }
+
+    const totalSpend = await prisma.spend.aggregate({
+      _sum: { value: true },
+      where: { userId: parseInt(userId, 10) },
+    });
+
+    const byCategory = await prisma.spend.groupBy({
+      by: ["category"],
+      _sum: { value: true },
+      where: { userId: parseInt(userId, 10) },
+    });
+
+    const allSpends = await prisma.spend.findMany({
+      where: { userId: parseInt(userId, 10) },
+      orderBy: { date: "desc" },
+    });
+
+    res.json({
+      totalSpend: totalSpend._sum.value || 0,
+      bar: byCategory.map((item) => ({
+        category: item.category,
+        amount: item._sum.value,
+      })),
+      pie: byCategory.map((item) => ({
+        name: item.category,
+        value: item._sum.value,
+      })),
+      spends: allSpends,
+      infoText: "Your Spender 20% more of last month",
     });
   } catch (error) {
     console.error("Summary error:", error);
