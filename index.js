@@ -307,8 +307,6 @@ app.get("/transactions", async (req, res) => {
         description: true,
         value: true,
         date: true,
-        name: true,
-        type: "income",
       },
     });
 
@@ -322,8 +320,6 @@ app.get("/transactions", async (req, res) => {
         description: true,
         value: true,
         date: true,
-        name: true,
-        type: "spend",
       },
     });
 
