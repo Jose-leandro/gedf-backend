@@ -24,6 +24,7 @@ model Spend {
   value    Float
   status   String
   people   String
+  description String?   
   userId   Int
   user     User     @relation(fields: [userId], references: [id])
 }
