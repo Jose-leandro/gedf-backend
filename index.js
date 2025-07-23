@@ -104,7 +104,8 @@ app.get("/api/income/summary", async (req, res) => {
 
 app.post("/api/spends", async (req, res) => {
   try {
-    const { category, date, value, statusSpend, description, people, userId } = req.body;
+    const { category, date, value, statusSpend, description, people, userId } =
+      req.body;
 
     if (!userId) {
       return res.status(400).json({ message: "userId is required" });
@@ -348,6 +349,42 @@ app.get("/transactions", async (req, res) => {
   } catch (error) {
     console.error("transactions error:", error);
     res.status(500).json({ message: "Database error" });
+  }
+});
+
+app.delete("/api/incomes/delete/:id", async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) return res.status(400).json({ message: "Missing transaction ID" });
+
+  try {
+    try {
+      await prisma.income.delete({ where: { id } });
+      return res.status(200).json({ message: `Income ${id} deleted` });
+    } catch (err) {}
+
+    return res.status(404).json({ message: "Transaction not found" });
+  } catch (err) {
+    console.error("Delete error:", err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+app.delete("/api/spends/delete/:id", async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) return res.status(400).json({ message: "Missing transaction ID" });
+
+  try {
+    try {
+      await prisma.spend.delete({ where: { id } });
+      return res.status(200).json({ message: `Spend ${id} deleted` });
+    } catch (err) {}
+
+    return res.status(404).json({ message: "Transaction not found" });
+  } catch (err) {
+    console.error("Delete error:", err);
+    return res.status(500).json({ message: "Internal server error" });
   }
 });
 
