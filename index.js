@@ -130,6 +130,64 @@ app.post("/api/spends", async (req, res) => {
   }
 });
 
+app.get("/api/get/spend/:id", async (req, res) => {
+  const { id } = req.params;
+  const userId = Number(req.query.userId);
+
+  if (!userId) {
+    return res.status(400).json({ message: "userId is required" });
+  }
+
+  try {
+    const income = await prisma.spend.findFirst({
+      where: {
+        id,
+        userId,
+      },
+    });
+
+    if (!income) {
+      return res
+        .status(404)
+        .json({ message: "Spend not found or access denied" });
+    }
+
+    res.status(200).json(income);
+  } catch (error) {
+    console.error("Error fetching spend:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.get("/api/get/income/:id", async (req, res) => {
+  const { id } = req.params;
+  const userId = Number(req.query.userId);
+
+  if (!userId) {
+    return res.status(400).json({ message: "userId is required" });
+  }
+
+  try {
+    const income = await prisma.income.findFirst({
+      where: {
+        id,
+        userId,
+      },
+    });
+
+    if (!income) {
+      return res
+        .status(404)
+        .json({ message: "Income not found or access denied" });
+    }
+
+    res.status(200).json(income);
+  } catch (error) {
+    console.error("Error fetching income:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 app.get("/api/spends/summary", async (req, res) => {
   try {
     const { userId } = req.query;
