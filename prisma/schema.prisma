@@ -22,7 +22,7 @@ model Spend {
   category    String
   date        DateTime @default(now())
   value       Float
-  status      String
+  statusSpend String
   people      String
   description String?    
   userId      Int
