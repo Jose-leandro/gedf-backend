@@ -131,7 +131,7 @@ app.post("/api/spends", async (req, res) => {
 });
 
 app.get("/api/get/spend/:id", async (req, res) => {
-  const { id } = req.params;
+  const id = Number(req.params.id);
   const userId = Number(req.query.userId);
 
   if (!userId) {
@@ -160,7 +160,7 @@ app.get("/api/get/spend/:id", async (req, res) => {
 });
 
 app.get("/api/get/income/:id", async (req, res) => {
-  const { id } = req.params;
+  const id = Number(req.params.id);
   const userId = Number(req.query.userId);
 
   if (!userId) {
