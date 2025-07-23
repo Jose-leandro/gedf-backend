@@ -104,7 +104,7 @@ app.get("/api/income/summary", async (req, res) => {
 
 app.post("/api/spends", async (req, res) => {
   try {
-    const { category, date, value, description, people, userId } = req.body;
+    const { category, date, value, statusSpend, description, people, userId } = req.body;
 
     if (!userId) {
       return res.status(400).json({ message: "userId is required" });
@@ -115,6 +115,7 @@ app.post("/api/spends", async (req, res) => {
         category,
         date: new Date(date),
         value: parseFloat(value),
+        statusSpend,
         description,
         people,
         userId: parseInt(userId, 10),
