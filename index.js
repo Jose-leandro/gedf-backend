@@ -113,7 +113,7 @@ app.post("/api/spends", async (req, res) => {
     const spend = await prisma.spend.create({
       data: {
         category,
-        date: new new Date()(),
+        date: new Date(date),
         value: parseFloat(value),
         description,
         people,
