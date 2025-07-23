@@ -416,15 +416,11 @@ app.delete("/api/incomes/delete/:id", async (req, res) => {
   if (!id) return res.status(400).json({ message: "Missing transaction ID" });
 
   try {
-    try {
-      await prisma.income.delete({ where: { id } });
-      return res.status(200).json({ message: `Income ${id} deleted` });
-    } catch (err) {}
-
-    return res.status(404).json({ message: "Transaction not found" });
+    await prisma.income.delete({ where: { id: Number(id) } });
+    return res.status(200).json({ message: `Income ${id} deleted` });
   } catch (err) {
-    console.error("Delete error:", err);
-    return res.status(500).json({ message: "Internal server error" });
+    console.error("Delete income error:", err);
+    return res.status(404).json({ message: "Transaction not found" });
   }
 });
 
@@ -434,15 +430,11 @@ app.delete("/api/spends/delete/:id", async (req, res) => {
   if (!id) return res.status(400).json({ message: "Missing transaction ID" });
 
   try {
-    try {
-      await prisma.spend.delete({ where: { id } });
-      return res.status(200).json({ message: `Spend ${id} deleted` });
-    } catch (err) {}
-
-    return res.status(404).json({ message: "Transaction not found" });
+    await prisma.spend.delete({ where: { id: Number(id) } });
+    return res.status(200).json({ message: `Spend ${id} deleted` });
   } catch (err) {
-    console.error("Delete error:", err);
-    return res.status(500).json({ message: "Internal server error" });
+    console.error("Delete spend error:", err);
+    return res.status(404).json({ message: "Transaction not found" });
   }
 });
 
