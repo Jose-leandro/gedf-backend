@@ -18,15 +18,15 @@ model User {
 }
 
 model Spend {
-  id       Int      @id @default(autoincrement())
-  category String
-  date     DateTime @default(now())
-  value    Float
-  status   String
-  people   String
-  description String?   
-  userId   Int
-  user     User     @relation(fields: [userId], references: [id])
+  id          Int      @id @default(autoincrement())
+  category    String
+  date        DateTime @default(now())
+  value       Float
+  status      String
+  people      String
+  description String?    
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
 }
 
 model Income {
