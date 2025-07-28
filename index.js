@@ -59,6 +59,41 @@ app.post("/api/income", async (req, res) => {
   }
 });
 
+app.post("/api/spends/edit/:id", async (req, res) => {
+  try {
+    const incomeId = parseInt(req.params.id, 10);
+    const { category, date, value, description, people, userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ message: "userId is required" });
+    }
+
+    const updatedIncome = await prisma.income.update({
+      where: { id: incomeId },
+      data: {
+        category,
+        date: new Date(date),
+        value: parseFloat(value),
+        statusSpend,
+        description,
+        people,
+        userId: parseInt(userId, 10),
+      },
+    });
+
+    res.status(201).json(updatedIncome);
+  } catch (error) {
+    console.error("Prisma update error:", error);
+
+    if (error.code === "P2025") {
+      // Record not found
+      return res.status(404).json({ message: "Transaction not found" });
+    }
+
+    res.status(500).json({ message: "Database error" });
+  }
+});
+
 app.get("/api/income/summary", async (req, res) => {
   try {
     const { userId } = req.query;
@@ -126,6 +161,42 @@ app.post("/api/spends", async (req, res) => {
     res.status(201).json(spend);
   } catch (error) {
     console.error("Prisma save error:", error);
+    res.status(500).json({ message: "Database error" });
+  }
+});
+
+app.put("/api/spends/edit/:id", async (req, res) => {
+  try {
+    const spendId = parseInt(req.params.id, 10);
+    const { category, date, value, statusSpend, description, people, userId } =
+      req.body;
+
+    if (!userId) {
+      return res.status(400).json({ message: "userId is required" });
+    }
+
+    const updatedSpend = await prisma.spend.update({
+      where: { id: spendId },
+      data: {
+        category,
+        date: new Date(date),
+        value: parseFloat(value),
+        statusSpend,
+        description,
+        people,
+        userId: parseInt(userId, 10),
+      },
+    });
+
+    res.status(200).json(updatedSpend);
+  } catch (error) {
+    console.error("Prisma update error:", error);
+
+    if (error.code === "P2025") {
+      // Record not found
+      return res.status(404).json({ message: "Transaction not found" });
+    }
+
     res.status(500).json({ message: "Database error" });
   }
 });
