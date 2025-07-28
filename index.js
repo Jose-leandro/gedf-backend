@@ -509,6 +509,60 @@ app.delete("/api/spends/delete/:id", async (req, res) => {
   }
 });
 
+app.post("/api/accounts", async (req, res) => {
+  try {
+    const { name, type, balance, userId } = req.body;
+
+    if (!name || !type || !userId) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const account = await prisma.account.create({
+      data: {
+        name,
+        type,
+        balance: parseFloat(balance) || 0,
+        userId: parseInt(userId, 10),
+      },
+    });
+
+    res.status(201).json(account);
+  } catch (error) {
+    console.error("Error creating account:", error);
+    res.status(500).json({ message: "Database error" });
+  }
+});
+
+app.post("/api/categories", async (req, res) => {
+  try {
+    const { name, subcategories = [], userId } = req.body;
+
+    if (!name || !userId) {
+      return res
+        .status(400)
+        .json({ message: "Category name and userId are required" });
+    }
+
+    const category = await prisma.category.create({
+      data: {
+        name,
+        userId: parseInt(userId, 10),
+        subcategories: {
+          create: subcategories.map((sub) => ({ name: sub })),
+        },
+      },
+      include: {
+        subcategories: true,
+      },
+    });
+
+    res.status(201).json(category);
+  } catch (error) {
+    console.error("Error creating category:", error);
+    res.status(500).json({ message: "Database error" });
+  }
+});
+
 app.listen(3000, () => {
   console.log("Express server initialized");
 });
