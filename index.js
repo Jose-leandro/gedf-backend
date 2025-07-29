@@ -537,24 +537,26 @@ app.post("/api/categories", async (req, res) => {
   try {
     const { name, subcategories, userId } = req.body;
 
-    console.log("Received subcategories:", subcategories);
-
     if (!name || !userId) {
       return res
         .status(400)
         .json({ message: "Category name and userId are required" });
     }
 
+    // Create the subcategory (expects `subcategories` to be a string)
+    const subcategory = await prisma.subcategory.create({
+      data: { name: subcategories },
+    });
+
+    // Create the category and link the subcategory
     const category = await prisma.category.create({
       data: {
         name,
         userId: parseInt(userId, 10),
-        subcategories: {
-          create: { name: subcategories },
-        },
+        subcategoryId: subcategory.id,
       },
       include: {
-        subcategories: true,
+        subcategory: true,
       },
     });
 
