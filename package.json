@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^6.10.1",
+    "@prisma/client": "^6.13.0",
     "@types/node": "^20.9.1",
     "cors": "^2.8.5",
     "curl": "^0.1.4",

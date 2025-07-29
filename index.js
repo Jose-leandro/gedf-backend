@@ -550,7 +550,7 @@ app.post("/api/categories", async (req, res) => {
         name,
         userId: parseInt(userId, 10),
         subcategories: {
-          create: subcategories ? [{ name: subcategories }] : [],
+          create: { name: subcategories },
         },
       },
       include: {
