@@ -44,7 +44,7 @@ app.post("/api/income", async (req, res) => {
     const income = await prisma.income.create({
       data: {
         category,
-        date: new new Date()(),
+        date: new Date(date),
         value: parseFloat(value),
         description,
         people,
