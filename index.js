@@ -567,6 +567,33 @@ app.post("/api/categories", async (req, res) => {
   }
 });
 
+app.get("/api/get/categories", async (req, res) => {
+  try {
+    const { userId } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({ message: "userId is required" });
+    }
+
+    const parsedUserId = parseInt(userId, 10);
+
+    const categories = await prisma.category.findMany({
+      where: {
+        userId: parsedUserId,
+      },
+      include: {
+        subcategory: true, 
+      },
+    });
+
+    res.status(200).json(categories);
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    res.status(500).json({ message: "Database error" });
+  }
+});
+
+
 app.listen(3000, () => {
   console.log("Express server initialized");
 });
