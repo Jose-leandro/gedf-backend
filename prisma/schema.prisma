@@ -53,19 +53,20 @@ model Account {
 }
 
 model Category {
-  id             Int        @id @default(autoincrement())
-  name           String
-  subcategories  Subcategory[]
-  userId         Int
-  user           User       @relation(fields: [userId], references: [id])
+  id            Int          @id @default(autoincrement())
+  name          String
+  subcategory   Subcategory? @relation(fields: [subcategoryId], references: [id])
+  subcategoryId Int?  @unique        
+  userId        Int
+  user          User         @relation(fields: [userId], references: [id])
 }
 
 model Subcategory {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   name       String
-  categoryId Int
-  category   Category @relation(fields: [categoryId], references: [id])
+  category   Category? @relation
 }
+
 
 
 

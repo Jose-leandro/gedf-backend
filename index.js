@@ -535,7 +535,9 @@ app.post("/api/accounts", async (req, res) => {
 
 app.post("/api/categories", async (req, res) => {
   try {
-    const { name, subcategories = [], userId } = req.body;
+    const { name, subcategories, userId } = req.body;
+
+    console.log("Received subcategories:", subcategories);
 
     if (!name || !userId) {
       return res
@@ -548,7 +550,7 @@ app.post("/api/categories", async (req, res) => {
         name,
         userId: parseInt(userId, 10),
         subcategories: {
-          create: subcategories.map((sub) => ({ name: sub })),
+          create: subcategories ? [{ name: subcategories }] : [],
         },
       },
       include: {
